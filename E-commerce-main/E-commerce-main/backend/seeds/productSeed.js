@@ -1,43 +1,43 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const Product = require('../models/Product');
+const crypto = require('crypto');
 
 dotenv.config();
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected for seeding'))
-  .catch(err => console.error(err));
-
-// List of vendor IDs – replace with actual vendor IDs from your database
-// First, create a vendor user manually or use the first vendor you registered
-// For demo, we'll use a placeholder – you need to replace with real vendor IDs
-const vendorIds = [
-  '6a2059d887151fe49d9970d4', // Replace with actual vendor ID from your DB
-];
-
-// Helper to get random vendor ID from the list
-const getRandomVendor = () => vendorIds[Math.floor(Math.random() * vendorIds.length)];
-
-// Define categories (matches frontend filter)
-const categories = [
-  'electronics', 'clothing', 'home', 'beauty', 'toys', 'books', 'other'
-];
-
-// Product images (placeholders – replace with actual URLs if needed)
-const imagePlaceholders = {
-  electronics: 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=300',
-  clothing: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=300',
-  home: 'https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=300',
-  beauty: 'https://images.unsplash.com/photo-1596462502278-27bfdc6efae2?w=300',
-  toys: 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=300',
-  books: 'https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=300',
-  other: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300',
+const connectWithRetry = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 60000,
+    });
+    console.log('✅ MongoDB connected for seeding');
+  } catch (err) {
+    console.error('❌ MongoDB connection error:', err.message);
+    setTimeout(connectWithRetry, 5000);
+  }
 };
 
-// Generate 60 products
+const generateSlug = (name) => {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+};
+
+// REPLACE WITH YOUR ACTUAL VENDOR ID (from your users collection)
+const VENDOR_ID = '6a2059d887151fe49d9970d4'; // CHANGE THIS
+
+// Generate a UNIQUE image URL using name hash + index
+const getProductImageUrl = (productName, index) => {
+  const hash = crypto.createHash('md5').update(productName).digest('hex');
+  const numericHash = parseInt(hash.substring(0, 8), 16);
+  // Mix index to avoid any collision
+  const imageId = ((numericHash % 900) + (index % 100) + 100) % 1000;
+  return `https://picsum.photos/id/${imageId}/300/300`;
+};
+
 const products = [
-  // Electronics (12 products)
+  // Electronics (12)
   { name: 'Samsung Galaxy S24 Ultra', description: 'Latest flagship with AI camera and S Pen', price: 129999, compareAtPrice: 139999, stock: 45, category: 'electronics', gstRate: 18 },
   { name: 'iPhone 15 Pro Max', description: 'A17 Pro chip, titanium design, USB-C', price: 159999, compareAtPrice: 169999, stock: 30, category: 'electronics', gstRate: 18 },
   { name: 'Sony WH-1000XM5 Headphones', description: 'Industry-leading noise cancellation', price: 29999, compareAtPrice: 34999, stock: 60, category: 'electronics', gstRate: 18 },
@@ -50,8 +50,7 @@ const products = [
   { name: 'Logitech MX Master 3S Mouse', description: 'Ultra-fast scrolling, ergonomic', price: 7999, compareAtPrice: 9999, stock: 70, category: 'electronics', gstRate: 18 },
   { name: 'HP Victus Gaming Laptop', description: 'RTX 4050, 16GB RAM, 144Hz', price: 84999, compareAtPrice: 94999, stock: 40, category: 'electronics', gstRate: 18 },
   { name: 'JBL Flip 6 Speaker', description: 'Waterproof, 12h battery', price: 7999, compareAtPrice: 9999, stock: 90, category: 'electronics', gstRate: 18 },
-
-  // Clothing (10 products)
+  // Clothing (10)
   { name: 'Men Slim Fit Jeans', description: 'Stretchable cotton, all sizes', price: 1499, compareAtPrice: 2999, stock: 150, category: 'clothing', gstRate: 12 },
   { name: 'Women Cotton Kurti', description: 'Printed, breathable fabric', price: 999, compareAtPrice: 1999, stock: 200, category: 'clothing', gstRate: 12 },
   { name: 'Kids T-Shirt (Pack of 3)', description: '100% cotton, colorful prints', price: 799, compareAtPrice: 1499, stock: 300, category: 'clothing', gstRate: 12 },
@@ -62,8 +61,7 @@ const products = [
   { name: 'Kids Denim Jacket', description: 'Stylish, durable', price: 1799, compareAtPrice: 2999, stock: 60, category: 'clothing', gstRate: 12 },
   { name: 'Winter Hoodie', description: 'Thick fleece, unisex', price: 1499, compareAtPrice: 2999, stock: 110, category: 'clothing', gstRate: 12 },
   { name: 'School Uniform (Boys)', description: 'Shirt + pants set', price: 999, compareAtPrice: 1499, stock: 200, category: 'clothing', gstRate: 12 },
-
-  // Home (8 products)
+  // Home (8)
   { name: 'Memory Foam Pillow', description: 'Orthopedic, washable cover', price: 999, compareAtPrice: 1999, stock: 180, category: 'home', gstRate: 18 },
   { name: 'Non-Stick Cookware Set', description: '10 pieces, induction compatible', price: 2999, compareAtPrice: 5999, stock: 70, category: 'home', gstRate: 18 },
   { name: 'Bamboo Cutting Board', description: 'Eco-friendly, 3 sizes', price: 499, compareAtPrice: 999, stock: 150, category: 'home', gstRate: 18 },
@@ -72,8 +70,7 @@ const products = [
   { name: 'Wall Clock (12 inch)', description: 'Silent movement, decorative', price: 799, compareAtPrice: 1499, stock: 90, category: 'home', gstRate: 18 },
   { name: 'Vacuum Cleaner', description: 'Handheld, cordless', price: 4999, compareAtPrice: 9999, stock: 40, category: 'home', gstRate: 18 },
   { name: 'Microfiber Towel Set', description: '4-piece, quick dry', price: 699, compareAtPrice: 1299, stock: 200, category: 'home', gstRate: 12 },
-
-  // Beauty (8 products)
+  // Beauty (8)
   { name: 'Vitamin C Face Serum', description: 'Brightening, anti-aging', price: 599, compareAtPrice: 1499, stock: 250, category: 'beauty', gstRate: 18 },
   { name: 'Matte Lipstick Set', description: '6 shades, long lasting', price: 499, compareAtPrice: 999, stock: 300, category: 'beauty', gstRate: 18 },
   { name: 'Face Wash (Charcoal)', description: 'Oil control, 100ml', price: 249, compareAtPrice: 499, stock: 400, category: 'beauty', gstRate: 18 },
@@ -82,8 +79,7 @@ const products = [
   { name: 'Men Beard Oil', description: 'Organic, 30ml', price: 399, compareAtPrice: 799, stock: 200, category: 'beauty', gstRate: 18 },
   { name: 'Eye Shadow Palette', description: '18 colors, shimmer + matte', price: 799, compareAtPrice: 1599, stock: 150, category: 'beauty', gstRate: 18 },
   { name: 'Sunscreen SPF 50', description: 'Water resistant, 100ml', price: 449, compareAtPrice: 899, stock: 300, category: 'beauty', gstRate: 18 },
-
-  // Toys (8 products)
+  // Toys (8)
   { name: 'LEGO Classic Blocks', description: '221 pieces, ages 4+', price: 1499, compareAtPrice: 2499, stock: 80, category: 'toys', gstRate: 12 },
   { name: 'Remote Control Car', description: 'Rechargeable, off-road', price: 1299, compareAtPrice: 1999, stock: 120, category: 'toys', gstRate: 12 },
   { name: 'Barbie Dreamhouse', description: 'Doll house with furniture', price: 4999, compareAtPrice: 7999, stock: 30, category: 'toys', gstRate: 12 },
@@ -92,8 +88,7 @@ const products = [
   { name: 'Slime Kit', description: '10 colors, scented', price: 299, compareAtPrice: 599, stock: 250, category: 'toys', gstRate: 12 },
   { name: 'Educational Laptop', description: '20 activities, kids', price: 999, compareAtPrice: 1799, stock: 100, category: 'toys', gstRate: 12 },
   { name: 'Flying Drone', description: 'Altitude hold, 1080p camera', price: 2999, compareAtPrice: 4999, stock: 60, category: 'toys', gstRate: 12 },
-
-  // Books (8 products)
+  // Books (8)
   { name: 'Atomic Habits (James Clear)', description: 'Bestseller, paperback', price: 399, compareAtPrice: 599, stock: 200, category: 'books', gstRate: 5 },
   { name: 'The Alchemist (Paulo Coelho)', description: 'Classic, new edition', price: 299, compareAtPrice: 499, stock: 300, category: 'books', gstRate: 5 },
   { name: 'Rich Dad Poor Dad', description: 'Financial literacy', price: 349, compareAtPrice: 599, stock: 250, category: 'books', gstRate: 5 },
@@ -102,8 +97,7 @@ const products = [
   { name: 'The Psychology of Money', description: 'Timeless lessons', price: 349, compareAtPrice: 599, stock: 180, category: 'books', gstRate: 5 },
   { name: 'Children Story Book Set', description: '10 moral stories', price: 499, compareAtPrice: 999, stock: 400, category: 'books', gstRate: 5 },
   { name: 'Cracking the Coding Interview', description: 'Programming guide', price: 799, compareAtPrice: 1299, stock: 80, category: 'books', gstRate: 5 },
-
-  // Other (6 products)
+  // Other (6)
   { name: 'Stainless Steel Water Bottle', description: '750ml, insulated', price: 599, compareAtPrice: 999, stock: 300, category: 'other', gstRate: 18 },
   { name: 'Backpack (Large)', description: 'Waterproof, laptop compartment', price: 1499, compareAtPrice: 2499, stock: 150, category: 'other', gstRate: 12 },
   { name: 'Yoga Mat', description: '6mm thick, non-slip', price: 799, compareAtPrice: 1499, stock: 200, category: 'other', gstRate: 12 },
@@ -112,20 +106,29 @@ const products = [
   { name: 'USB-C Fast Charger', description: '65W, GaN technology', price: 1299, compareAtPrice: 2499, stock: 180, category: 'other', gstRate: 18 },
 ];
 
-// Map products to full objects with vendorId and image
-const fullProducts = products.map(product => ({
-  ...product,
-  vendorId: getRandomVendor(),
-  images: [{ url: imagePlaceholders[product.category], alt: product.name }],
-  isActive: true,
-}));
-
-// Seed function
 const seedProducts = async () => {
   try {
-    await Product.deleteMany(); // Optional: clears existing products
+    const User = require('../models/User');
+    const vendor = await User.findById(VENDOR_ID);
+    if (!vendor || vendor.role !== 'vendor') {
+      console.error(`❌ Vendor ${VENDOR_ID} not valid.`);
+      process.exit(1);
+    }
+    console.log(`✅ Found vendor: ${vendor.name}`);
+
+    await Product.deleteMany({});
+    console.log('Cleared old products');
+
+    const fullProducts = products.map((product, idx) => ({
+      ...product,
+      slug: generateSlug(product.name),
+      vendorId: VENDOR_ID,
+      images: [{ url: getProductImageUrl(product.name, idx), alt: product.name }],
+      isActive: true,
+    }));
+
     const inserted = await Product.insertMany(fullProducts);
-    console.log(`✅ Successfully inserted ${inserted.length} products`);
+    console.log(`✅ Inserted ${inserted.length} products with unique images`);
     process.exit(0);
   } catch (error) {
     console.error('❌ Seeding failed:', error);
@@ -133,4 +136,4 @@ const seedProducts = async () => {
   }
 };
 
-seedProducts();
+connectWithRetry().then(seedProducts);

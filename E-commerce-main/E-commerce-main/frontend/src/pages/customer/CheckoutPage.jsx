@@ -82,7 +82,8 @@ const CheckoutPage = () => {
       const razorpay = new window.Razorpay(options);
       razorpay.open();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Order creation failed');
+      const message = error.response?.data?.message || 'Something went wrong. Please try again.';
+      toast.error(message);
     } finally {
       setLoading(false);
     }

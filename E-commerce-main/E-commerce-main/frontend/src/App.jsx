@@ -6,11 +6,13 @@ import { CartProvider } from './context/CartContext';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import PrivateRoute from './routes/PrivateRoute';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
 // Auth Pages
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetPassword from './pages/auth/ResetPassword';
 
 // Customer Pages
 import HomePage from './pages/customer/HomePage';
@@ -40,65 +42,84 @@ import AdminAnalytics from './pages/admin/Analytics';
 
 // Common Pages
 import ChatInterface from './pages/common/ChatInterface';
+import AboutUs from './pages/common/AboutUs';
+import ContactUs from './pages/common/ContactUs';
+import PrivacyPolicy from './pages/common/PrivacyPolicy';
+import TermsOfService from './pages/common/TermsOfService';
+import RefundPolicy from './pages/common/RefundPolicy';
 import NotFound from './pages/common/NotFound';
+
+const AppContent = () => {
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <main className="flex-grow">
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/contact" element={<ContactUs />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/refund" element={<RefundPolicy />} />
+
+          {/* Customer Routes */}
+          <Route element={<PrivateRoute allowedRoles={['customer', 'vendor', 'admin']} />}>
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/orders" element={<OrderHistory />} />
+            <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/chat" element={<ChatInterface />} />
+          </Route>
+
+          {/* Vendor Routes */}
+          <Route element={<PrivateRoute allowedRoles={['vendor']} />}>
+            <Route path="/vendor/dashboard" element={<VendorDashboard />} />
+            <Route path="/vendor/products" element={<VendorProducts />} />
+            <Route path="/vendor/products/add" element={<VendorAddProduct />} />
+            <Route path="/vendor/products/edit/:id" element={<VendorEditProduct />} />
+            <Route path="/vendor/orders" element={<VendorOrders />} />
+            <Route path="/vendor/inventory" element={<VendorInventory />} />
+            <Route path="/vendor/payouts" element={<VendorPayouts />} />
+            <Route path="/vendor/reviews" element={<VendorReviews />} />
+          </Route>
+
+          {/* Admin Routes */}
+          <Route element={<PrivateRoute allowedRoles={['admin']} />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/vendors" element={<AdminVendors />} />
+            <Route path="/admin/orders" element={<AdminOrders />} />
+            <Route path="/admin/analytics" element={<AdminAnalytics />} />
+          </Route>
+
+          {/* 404 */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
+  );
+};
 
 function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <CartProvider>
-          <div className="flex flex-col min-h-screen">
-            <Navbar />
-            <main className="flex-grow">
-              <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={<HomePage />} />
-                <Route path="/products" element={<ProductsPage />} />
-                <Route path="/product/:id" element={<ProductDetail />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-
-                {/* Customer Routes */}
-                <Route element={<PrivateRoute allowedRoles={['customer', 'vendor', 'admin']} />}>
-                  <Route path="/cart" element={<CartPage />} />
-                  <Route path="/checkout" element={<CheckoutPage />} />
-                  <Route path="/orders" element={<OrderHistory />} />
-                  <Route path="/wishlist" element={<Wishlist />} />
-                  <Route path="/profile" element={<ProfilePage />} />
-                  <Route path="/chat" element={<ChatInterface />} />
-                </Route>
-
-                {/* Vendor Routes */}
-                <Route element={<PrivateRoute allowedRoles={['vendor']} />}>
-                  <Route path="/vendor/dashboard" element={<VendorDashboard />} />
-                  <Route path="/vendor/products" element={<VendorProducts />} />
-                  <Route path="/vendor/products/add" element={<VendorAddProduct />} />
-                  <Route path="/vendor/products/edit/:id" element={<VendorEditProduct />} />
-                  <Route path="/vendor/orders" element={<VendorOrders />} />
-                  <Route path="/vendor/inventory" element={<VendorInventory />} />
-                  <Route path="/vendor/payouts" element={<VendorPayouts />} />
-                  <Route path="/vendor/reviews" element={<VendorReviews />} />
-                </Route>
-
-                {/* Admin Routes */}
-                <Route element={<PrivateRoute allowedRoles={['admin']} />}>
-                  <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                  <Route path="/admin/vendors" element={<AdminVendors />} />
-                  <Route path="/admin/orders" element={<AdminOrders />} />
-                  <Route path="/admin/analytics" element={<AdminAnalytics />} />
-                </Route>
-
-                {/* 404 */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </main>
-            <Footer />
-          </div>
-          <Toaster position="bottom-right" toastOptions={{ duration: 3000 }} />
-        </CartProvider>
-      </AuthProvider>
-    </Router>
+    <ErrorBoundary>
+      <Router>
+        <AuthProvider>
+          <CartProvider>
+            <AppContent />
+            <Toaster position="bottom-right" toastOptions={{ duration: 3000 }} />
+          </CartProvider>
+        </AuthProvider>
+      </Router>
+    </ErrorBoundary>
   );
 }
 

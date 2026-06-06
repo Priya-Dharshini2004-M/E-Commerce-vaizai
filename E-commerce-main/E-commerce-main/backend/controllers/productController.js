@@ -28,7 +28,15 @@ const createProduct = async (req, res) => {
 // GET all products
 const getProducts = async (req, res) => {
   try {
-    const products = await Product.find().populate('vendorId', 'name');
+    const { category, limit, search } = req.query;
+    let filter = { isActive: true };
+    if (category) filter.category = category;
+    if (search) filter.name = { $regex: search, $options: 'i' };
+    
+    let query = Product.find(filter).populate('vendorId', 'name');
+    if (limit) query = query.limit(parseInt(limit));
+    
+    const products = await query;
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: error.message });

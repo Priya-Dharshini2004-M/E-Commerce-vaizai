@@ -6,17 +6,17 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       fetchUser();
     } else {
       setLoading(false);
     }
-  }, []);
+  }, [token]);
 
   const fetchUser = async () => {
     try {
@@ -24,6 +24,7 @@ export const AuthProvider = ({ children }) => {
       setUser(data);
     } catch (error) {
       localStorage.removeItem('token');
+      setToken(null);
       delete axios.defaults.headers.common['Authorization'];
     } finally {
       setLoading(false);
@@ -34,6 +35,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await axios.post('/api/auth/login', { email, password });
       localStorage.setItem('token', data.token);
+      setToken(data.token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
       setUser(data);
       toast.success('Login successful');
@@ -48,6 +50,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await axios.post('/api/auth/register', { name, email, password, role });
       localStorage.setItem('token', data.token);
+      setToken(data.token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
       setUser(data);
       toast.success('Registration successful');
@@ -60,13 +63,14 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token');
+    setToken(null);
     delete axios.defaults.headers.common['Authorization'];
     setUser(null);
     toast.success('Logged out');
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

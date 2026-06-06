@@ -13,6 +13,7 @@ const AddProduct = () => {
     stock: '',
     category: 'electronics',
     gstRate: 18,
+    imageUrl: '', // NEW: image URL field
   });
   const [loading, setLoading] = useState(false);
 
@@ -24,11 +25,18 @@ const AddProduct = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post('/api/products', formData);
+      // Prepare product data: images array from imageUrl
+      const productData = {
+        ...formData,
+        images: formData.imageUrl ? [{ url: formData.imageUrl, alt: formData.name }] : [],
+      };
+      delete productData.imageUrl; // remove temporary field
+      await axios.post('/api/products', productData);
       toast.success('Product added successfully');
       navigate('/vendor/products');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to add product');
+      const message = error.response?.data?.message || 'Something went wrong. Please try again.';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -69,6 +77,11 @@ const AddProduct = () => {
               {categories.map(cat => <option key={cat} value={cat}>{cat.toUpperCase()}</option>)}
             </select>
           </div>
+        </div>
+        <div>
+          <label className="block text-gray-700 mb-1">Image URL (optional)</label>
+          <input type="url" name="imageUrl" value={formData.imageUrl} onChange={handleChange} placeholder="https://example.com/image.jpg" className="w-full border rounded px-3 py-2" />
+          <p className="text-xs text-gray-500 mt-1">Enter a direct image URL. Leave empty to use a placeholder.</p>
         </div>
         <div>
           <label className="block text-gray-700 mb-1">GST Rate (%)</label>

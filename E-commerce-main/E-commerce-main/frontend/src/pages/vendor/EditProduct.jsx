@@ -14,6 +14,7 @@ const EditProduct = () => {
     stock: '',
     category: '',
     gstRate: '',
+    imageUrl: '',
   });
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -33,6 +34,7 @@ const EditProduct = () => {
         stock: data.stock,
         category: data.category,
         gstRate: data.gstRate || 18,
+        imageUrl: data.images?.[0]?.url || '',
       });
     } catch (error) {
       toast.error('Product not found');
@@ -50,7 +52,12 @@ const EditProduct = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await axios.put(`/api/products/${id}`, formData);
+      const updateData = {
+        ...formData,
+        images: formData.imageUrl ? [{ url: formData.imageUrl, alt: formData.name }] : [],
+      };
+      delete updateData.imageUrl;
+      await axios.put(`/api/products/${id}`, updateData);
       toast.success('Product updated');
       navigate('/vendor/products');
     } catch (error) {
@@ -75,6 +82,9 @@ const EditProduct = () => {
         <div className="grid grid-cols-2 gap-4">
           <input type="number" name="stock" placeholder="Stock" required value={formData.stock} onChange={handleChange} className="border rounded px-3 py-2" />
           <input type="text" name="category" placeholder="Category" required value={formData.category} onChange={handleChange} className="border rounded px-3 py-2" />
+        </div>
+        <div>
+          <input type="url" name="imageUrl" placeholder="Image URL" value={formData.imageUrl} onChange={handleChange} className="w-full border rounded px-3 py-2" />
         </div>
         <input type="number" name="gstRate" placeholder="GST Rate" value={formData.gstRate} onChange={handleChange} className="w-full border rounded px-3 py-2" />
         <button type="submit" disabled={submitting} className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">Update Product</button>

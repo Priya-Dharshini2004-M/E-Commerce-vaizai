@@ -1,0 +1,231 @@
+.productContainer {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+  
+  /* Two‑column layout with narrower image column */
+  .productGrid {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;   /* image smaller */
+    gap: 2rem;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+    padding: 2rem;
+    margin-bottom: 3rem;
+  }
+  
+  .imageSection {
+    position: sticky;
+    top: 100px;
+    align-self: start;
+    text-align: center;
+  }
+  
+  .mainImage {
+    max-width: 100%;
+    max-height: 380px;          /* limit height */
+    width: auto;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    object-fit: contain;
+  }
+  
+  .infoSection {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .productTitle {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e293b;
+  }
+  
+  .priceContainer {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .currentPrice {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #2563eb;
+  }
+  
+  .oldPrice {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    text-decoration: line-through;
+  }
+  
+  .discountBadge {
+    background: #dc2626;
+    color: white;
+    padding: 0.2rem 0.8rem;
+    border-radius: 2rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  
+  .quantityBox {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  
+  .quantityInput {
+    width: 80px;
+    padding: 0.5rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    text-align: center;
+  }
+  
+  .buttonGroup {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  
+  .addToCartBtn, .buyNowBtn {
+    flex: 1;
+    text-align: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .addToCartBtn {
+    background: #2563eb;
+    color: white;
+  }
+  .addToCartBtn:hover { background: #1d4ed8; }
+  .buyNowBtn {
+    background: #16a34a;
+    color: white;
+  }
+  .buyNowBtn:hover { background: #15803d; }
+  
+  .sectionCard {
+    background: #f8fafc;
+    border-radius: 1rem;
+    padding: 1rem 1.5rem;
+    margin-top: 1rem;
+  }
+  
+  .sectionTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .specGrid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .specLabel {
+    font-weight: 600;
+    color: #475569;
+  }
+  
+  .offerList {
+    list-style: none;
+    padding-left: 0;
+  }
+  .offerList li {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .addressSection {
+    border-top: 2px solid #e2e8f0;
+    padding-top: 1.5rem;
+    margin-top: 1rem;
+  }
+  
+  .addressSelect {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  .addAddressBtn {
+    background: #f1f5f9;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    margin-top: 0.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  .addAddressBtn:hover { background: #e2e8f0; }
+  
+  /* ---------- Horizontal scroll for recommended products ---------- */
+  .recommendedSection {
+    margin-top: 3rem;
+  }
+  .recommendedTitle {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  .scrollContainer {
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    scroll-behavior: smooth;
+    padding-bottom: 1rem;
+  }
+  .scrollContainer::-webkit-scrollbar {
+    height: 8px;
+  }
+  .scrollContainer::-webkit-scrollbar-track {
+    background: #e2e8f0;
+    border-radius: 10px;
+  }
+  .scrollContainer::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 10px;
+  }
+  .scrollRow {
+    display: inline-flex;
+    gap: 1.5rem;
+  }
+  .scrollItem {
+    width: 250px;
+    white-space: normal;
+    flex-shrink: 0;
+  }
+  
+  @media (max-width: 768px) {
+    .productGrid {
+      grid-template-columns: 1fr;
+      padding: 1rem;
+    }
+    .imageSection {
+      position: static;
+    }
+    .mainImage {
+      max-height: 280px;
+    }
+    .scrollItem {
+      width: 200px;
+    }
+  }
