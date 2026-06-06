@@ -1,10 +1,17 @@
-FROM node:18 as build
+# backend/Dockerfile
+FROM node:18-alpine
+
 WORKDIR /app
+
+# Copy package files and install dependencies
 COPY package*.json ./
-RUN npm install
+RUN npm ci --only=production
+
+# Copy the rest of the backend code
 COPY . .
-RUN npm run build
-FROM nginx:alpine
-COPY --from=build /app/build /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+
+# Expose the port your backend runs on (5000)
+EXPOSE 5000
+
+# Start the server
+CMD ["node", "server.js"]
