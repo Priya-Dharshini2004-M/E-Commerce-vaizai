@@ -4,7 +4,6 @@ const crypto = require('crypto');
 const { generateToken, generateRefreshToken } = require('../utils/generateToken');
 const sendEmail = require('../utils/sendEmail');
 
-res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false, sameSite: 'strict' });
 
 // Register a new user
 const registerUser = async (req, res) => {
@@ -49,6 +48,13 @@ const loginUser = async (req, res) => {
     if (!isMatch) return res.status(401).json({ message: 'Invalid email or password' });
 
     if (!user.isActive) return res.status(401).json({ message: 'Account disabled' });
+
+    res.cookie('refreshToken', refreshToken, { 
+      httpOnly: true, 
+      secure: false,   // set true in production with HTTPS
+      sameSite: 'strict' 
+    });
+    res.json({ message: 'Logged in' });
 
     res.json({
       _id: user._id,
