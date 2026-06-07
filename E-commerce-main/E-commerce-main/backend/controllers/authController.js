@@ -47,16 +47,19 @@ const loginUser = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: 'Invalid email or password' });
-
     if (!user.isActive) return res.status(401).json({ message: 'Account disabled' });
 
+    // ✅ Define refreshToken first
+    const refreshToken = generateRefreshToken(user._id);
+
+    // ✅ Set cookie
     res.cookie('refreshToken', refreshToken, { 
       httpOnly: true, 
-      secure: false,   // set true in production with HTTPS
+      secure: false, 
       sameSite: 'strict' 
     });
-    res.json({ message: 'Logged in' });
 
+    // ✅ Send only ONE response
     res.json({
       _id: user._id,
       name: user.name,

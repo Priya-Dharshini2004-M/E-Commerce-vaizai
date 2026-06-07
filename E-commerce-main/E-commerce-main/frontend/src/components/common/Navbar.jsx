@@ -100,7 +100,7 @@ const Navbar = () => {
                   className="flex items-center gap-2 text-gray-700 hover:text-blue-600"
                 >
                   <FiUser className="w-5 h-5" />
-                  <span>{user.name.split(' ')[0]}</span>
+                  <span>{user?.name?.split(' ')[0] || 'User'}</span>
                   <FiChevronDown className="w-4 h-4" />
                 </button>
                 {userDropdownOpen && (
