@@ -1,10 +1,10 @@
 const User = require('../models/User');
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const { generateToken, generateRefreshToken } = require('../utils/generateToken');
 const sendEmail = require('../utils/sendEmail');
 
-res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false, sameSite: 'strict' });
 
 // Register a new user
 const registerUser = async (req, res) => {
@@ -50,13 +50,21 @@ const loginUser = async (req, res) => {
 
     if (!user.isActive) return res.status(401).json({ message: 'Account disabled' });
 
+    const refreshToken = generateRefreshToken(user._id); // pass id, not user object
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'strict'
+    });
+
     res.json({
       _id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
       token: generateToken(user._id, user.role),
-      refreshToken: generateRefreshToken(user._id),
+      refreshToken: refreshToken,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
