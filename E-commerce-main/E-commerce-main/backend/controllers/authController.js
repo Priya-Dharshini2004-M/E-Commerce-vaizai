@@ -50,13 +50,12 @@ const loginUser = async (req, res) => {
 
     if (!user.isActive) return res.status(401).json({ message: 'Account disabled' });
 
-    const refreshToken = generateRefreshToken(user._id); // pass id, not user object
-
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'strict'
+    res.cookie('refreshToken', refreshToken, { 
+      httpOnly: true, 
+      secure: false,   // set true in production with HTTPS
+      sameSite: 'strict' 
     });
+    res.json({ message: 'Logged in' });
 
     res.json({
       _id: user._id,
