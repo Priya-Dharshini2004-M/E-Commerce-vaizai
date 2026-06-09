@@ -1,39 +1,101 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { FiGithub, FiTwitter, FiInstagram, FiMail, FiPhone } from 'react-icons/fi';
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-white mt-16">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div>
-            <h3 className="text-xl font-bold mb-4">MultiVendor</h3>
-            <p className="text-gray-400">India's largest multi-vendor marketplace.</p>
+    <footer className="bg-slate-900 text-slate-300 mt-20 border-t border-slate-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
+          {/* Brand Info */}
+          <div className="md:col-span-4 space-y-4">
+            <Link to="/" className="inline-block">
+              <span className="text-2xl font-black bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent tracking-tight">
+                MultiVendor
+              </span>
+            </Link>
+            <p className="text-sm text-slate-400 max-w-sm leading-relaxed">
+              India's premium multi-vendor marketplace. Discover thousands of curated products from trusted local creators and enterprises.
+            </p>
+            <div className="flex space-x-4 pt-2">
+              <a href="#" className="p-2 bg-slate-800 hover:bg-indigo-600 rounded-lg text-slate-400 hover:text-white transition-all duration-300">
+                <FiTwitter className="w-4 h-4" />
+              </a>
+              <a href="#" className="p-2 bg-slate-800 hover:bg-indigo-600 rounded-lg text-slate-400 hover:text-white transition-all duration-300">
+                <FiInstagram className="w-4 h-4" />
+              </a>
+              <a href="#" className="p-2 bg-slate-800 hover:bg-indigo-600 rounded-lg text-slate-400 hover:text-white transition-all duration-300">
+                <FiGithub className="w-4 h-4" />
+              </a>
+            </div>
           </div>
-          <div>
-            <h4 className="font-semibold mb-4">Quick Links</h4>
-            <ul className="space-y-2 text-gray-400">
-              <li><Link to="/products" className="hover:text-white">Products</Link></li>
-              <li><Link to="/about" className="hover:text-white">About Us</Link></li>
-              <li><Link to="/contact" className="hover:text-white">Contact</Link></li>
+
+          {/* Quick Links */}
+          <div className="md:col-span-2 md:col-start-6 space-y-4">
+            <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-100">Shop & Explore</h4>
+            <ul className="space-y-2.5 text-sm">
+              <li>
+                <Link to="/products" className="text-slate-400 hover:text-indigo-400 transition-colors duration-200">
+                  All Products
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="text-slate-400 hover:text-indigo-400 transition-colors duration-200">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="text-slate-400 hover:text-indigo-400 transition-colors duration-200">
+                  Contact Support
+                </Link>
+              </li>
             </ul>
           </div>
-          <div>
-            <h4 className="font-semibold mb-4">Policies</h4>
-            <ul className="space-y-2 text-gray-400">
-              <li><Link to="/privacy" className="hover:text-white">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="hover:text-white">Terms of Service</Link></li>
-              <li><Link to="/refund" className="hover:text-white">Refund Policy</Link></li>
+
+          {/* Policies */}
+          <div className="md:col-span-2 space-y-4">
+            <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-100">Legal & Support</h4>
+            <ul className="space-y-2.5 text-sm">
+              <li>
+                <Link to="/privacy" className="text-slate-400 hover:text-indigo-400 transition-colors duration-200">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms" className="text-slate-400 hover:text-indigo-400 transition-colors duration-200">
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link to="/refund" className="text-slate-400 hover:text-indigo-400 transition-colors duration-200">
+                  Refund Policy
+                </Link>
+              </li>
             </ul>
           </div>
-          <div>
-            <h4 className="font-semibold mb-4">Contact</h4>
-            <p className="text-gray-400">Email: support@multivendor.com</p>
-            <p className="text-gray-400">Phone: +91 98765 43210</p>
+
+          {/* Contact Details */}
+          <div className="md:col-span-3 space-y-4">
+            <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-100">Get in Touch</h4>
+            <ul className="space-y-3 text-sm text-slate-400">
+              <li className="flex items-center space-x-2">
+                <FiMail className="w-4 h-4 text-indigo-400" />
+                <a href="mailto:support@multivendor.com" className="hover:text-indigo-400 transition-colors">support@multivendor.com</a>
+              </li>
+              <li className="flex items-center space-x-2">
+                <FiPhone className="w-4 h-4 text-indigo-400" />
+                <a href="tel:+919876543210" className="hover:text-indigo-400 transition-colors">+91 98765 43210</a>
+              </li>
+            </ul>
           </div>
         </div>
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          &copy; {new Date().getFullYear()} MultiVendor. All rights reserved.
+
+        <div className="border-t border-slate-800/80 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+          <p>&copy; {new Date().getFullYear()} MultiVendor. Created with care.</p>
+          <div className="flex space-x-6">
+            <span className="hover:text-slate-400 cursor-default transition-colors">Security Guarded</span>
+            <span className="hover:text-slate-400 cursor-default transition-colors">PCI Compliant</span>
+          </div>
         </div>
       </div>
     </footer>

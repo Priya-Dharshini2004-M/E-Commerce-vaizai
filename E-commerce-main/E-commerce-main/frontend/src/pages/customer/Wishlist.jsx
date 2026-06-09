@@ -1,13 +1,16 @@
+// frontend/src/pages/customer/Wishlist.jsx
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
-import { CartContext } from '../../context/CartContext';
-import toast from 'react-hot-toast';
+import ProductCard from '../../components/customer/ProductCard';
+import { FiHeart } from 'react-icons/fi';
+
+const TOKEN = {
+  slate50: '#f8fafc', slate900: '#0f172a', slate400: '#94a3b8', white: '#fff', slate100: '#f1f5f9'
+};
 
 const Wishlist = () => {
   const { token } = useContext(AuthContext);
-  const { addToCart } = useContext(CartContext);
   const [wishlist, setWishlist] = useState({ products: [] });
   const [loading, setLoading] = useState(true);
 
@@ -20,40 +23,24 @@ const Wishlist = () => {
     } catch (error) { console.error(error); } finally { setLoading(false); }
   };
 
-  const removeFromWishlist = async (productId) => {
-    try {
-      await axios.delete(`/api/wishlist/${productId}`, { headers: { Authorization: `Bearer ${token}` } });
-      fetchWishlist();
-      toast.success('Removed from wishlist');
-    } catch (error) {
-      const message = error.response?.data?.message || 'Something went wrong. Please try again.';
-      toast.error(message);
-    }
-  };
+  if (loading) return <div style={{ background: TOKEN.slate50, minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Loading...</div>;
 
-  if (loading) return <div className="text-center py-20">Loading...</div>;
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">My Wishlist</h1>
-      {wishlist.products.length === 0 ? <p className="text-gray-500">Your wishlist is empty.</p> : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {wishlist.products.map(product => (
-            <div key={product._id} className="bg-white rounded-lg shadow overflow-hidden">
-              <Link to={`/product/${product._id}`}>
-                <img src={product.images?.[0]?.url || 'https://via.placeholder.com/300'} alt={product.name} className="w-full h-48 object-cover" />
-              </Link>
-              <div className="p-4">
-                <Link to={`/product/${product._id}`}><h3 className="font-semibold">{product.name}</h3></Link>
-                <p className="text-blue-600 font-bold mt-1">₹{product.price}</p>
-                <div className="flex gap-2 mt-3">
-                  <button onClick={() => addToCart(product._id)} className="bg-blue-600 text-white px-3 py-1 rounded text-sm">Add to Cart</button>
-                  <button onClick={() => removeFromWishlist(product._id)} className="bg-red-500 text-white px-3 py-1 rounded text-sm">Remove</button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+    <div style={{ background: TOKEN.slate50, minHeight: '100vh', padding: '48px 24px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <h1 style={{ fontSize: 28, fontWeight: 800, color: TOKEN.slate900, marginBottom: 8 }}>My Wishlist</h1>
+        <p style={{ color: TOKEN.slate400, marginBottom: 32 }}>Products you've saved for later</p>
+        {wishlist.products.length === 0 ? (
+          <div style={{ textAlign: 'center', background: TOKEN.white, padding: 80, borderRadius: 20 }}>
+            <FiHeart size={48} style={{ color: TOKEN.slate400, marginBottom: 16 }} />
+            <p>Your wishlist is empty.</p>
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 24 }}>
+            {wishlist.products.map(product => <ProductCard key={product._id} product={product} />)}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

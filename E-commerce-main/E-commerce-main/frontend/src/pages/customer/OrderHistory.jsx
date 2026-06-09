@@ -1,64 +1,69 @@
+// frontend/src/pages/customer/OrderHistory.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { FiPackage, FiTruck, FiCheckCircle } from 'react-icons/fi';
+
+const TOKEN = {
+  slate50: '#f8fafc', slate900: '#0f172a', slate400: '#94a3b8', white: '#fff', slate100: '#f1f5f9',
+  slate600: '#475569', slate800: '#1e293b', indigo: '#4f46e5', emerald: '#10b981', amber: '#f59e0b'
+};
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
+  useEffect(() => { fetchOrders(); }, []);
   const fetchOrders = async () => {
-    try {
-      const { data } = await axios.get('/api/orders/myorders');
-      setOrders(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+    try { const { data } = await axios.get('/api/orders/myorders'); setOrders(data); } catch (error) { console.error(error); } finally { setLoading(false); }
   };
 
-  if (loading) return <div className="text-center py-20">Loading orders...</div>;
+  if (loading) return <div style={{ background: TOKEN.slate50, minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Loading orders...</div>;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">My Orders</h1>
-      {orders.length === 0 ? (
-        <p>No orders yet. <Link to="/products" className="text-blue-600">Start shopping</Link></p>
-      ) : (
-        <div className="space-y-6">
-          {orders.map(order => (
-            <div key={order._id} className="border rounded-lg p-4 shadow">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <p className="text-sm text-gray-500">Order ID: {order._id}</p>
-                  <p className="text-sm text-gray-500">Date: {new Date(order.createdAt).toLocaleDateString()}</p>
-                </div>
-                <span className={`px-3 py-1 rounded text-sm font-semibold ${
-                  order.orderStatus === 'delivered' ? 'bg-green-100 text-green-800' :
-                  order.orderStatus === 'processing' ? 'bg-yellow-100 text-yellow-800' :
-                  'bg-blue-100 text-blue-800'
-                }`}>{order.orderStatus}</span>
-              </div>
-              <div className="space-y-2">
-                {order.items.map((item, idx) => (
-                  <div key={idx} className="flex justify-between">
-                    <span>{item.name} x{item.quantity}</span>
-                    <span>₹{item.price * item.quantity}</span>
+    <div style={{ background: TOKEN.slate50, minHeight: '100vh', padding: '48px 24px' }}>
+      <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+        <h1 style={{ fontSize: 28, fontWeight: 800, color: TOKEN.slate900, marginBottom: 32 }}>Order History</h1>
+        {orders.length === 0 ? (
+          <div style={{ background: TOKEN.white, borderRadius: 20, padding: 60, textAlign: 'center' }}>
+            <p>No orders yet. <Link to="/products" style={{ color: TOKEN.indigo, fontWeight: 600 }}>Start shopping</Link></p>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            {orders.map(order => (
+              <div key={order._id} style={{ background: TOKEN.white, borderRadius: 20, border: `1px solid ${TOKEN.slate100}`, padding: 20 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', marginBottom: 16, paddingBottom: 12, borderBottom: `1px solid ${TOKEN.slate100}` }}>
+                  <div>
+                    <div style={{ fontSize: 12, color: TOKEN.slate400 }}>Order #{order._id.slice(-8)}</div>
+                    <div style={{ fontSize: 13 }}>{new Date(order.createdAt).toLocaleDateString()}</div>
                   </div>
-                ))}
+                  <span style={{
+                    background: order.orderStatus === 'delivered' ? '#d1fae5' : order.orderStatus === 'processing' ? '#fef3c7' : '#e0e7ff',
+                    color: order.orderStatus === 'delivered' ? '#065f46' : order.orderStatus === 'processing' ? '#92400e' : '#4338ca',
+                    padding: '4px 12px', borderRadius: 30, fontSize: 12, fontWeight: 700
+                  }}>{order.orderStatus}</span>
+                </div>
+                <div>
+                  {order.items.map((item, idx) => (
+                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 8 }}>
+                      <span>{item.name} x{item.quantity}</span>
+                      <span style={{ fontWeight: 600 }}>₹{(item.price * item.quantity).toLocaleString()}</span>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ marginTop: 16, paddingTop: 12, borderTop: `1px solid ${TOKEN.slate100}`, display: 'flex', justifyContent: 'space-between', fontWeight: 800 }}>
+                  <span>Total</span>
+                  <span style={{ color: TOKEN.indigo, fontSize: 18 }}>₹{order.totalAmount.toLocaleString()}</span>
+                </div>
+                <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: TOKEN.slate600 }}>
+                  {order.orderStatus === 'delivered' ? <FiCheckCircle color={TOKEN.emerald} /> : <FiTruck />}
+                  <span>{order.orderStatus === 'delivered' ? 'Delivered' : 'Processing & Shipping soon'}</span>
+                </div>
               </div>
-              <div className="border-t mt-4 pt-2 flex justify-between font-bold">
-                <span>Total</span>
-                <span>₹{order.totalAmount}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

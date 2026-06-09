@@ -1,128 +1,84 @@
-/* Top banner gradient */
-.topBanner {
-    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #6b21a5 100%);
-    padding: 2.5rem 0;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
+.mainContainer {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.sidebar {
+  width: 100%;
+}
+
+.sidebarInner {
+  position: sticky;
+  top: 90px;
+  height: calc(100vh - 120px);
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.sidebarInner::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebarInner::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebarInner::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.productArea {
+  min-width: 0;
+}
+
+.productGrid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* Scrollable category list bar styling */
+.categoryScroll {
+  scrollbar-width: none; /* Firefox */
+}
+.categoryScroll::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+@media (max-width: 1280px) {
+  .productGrid {
+    grid-template-columns: repeat(3, 1fr);
   }
-  
-  /* Main container: flex row, sidebar fixed width, product area takes rest */
+}
+
+@media (max-width: 1024px) {
   .mainContainer {
-    display: flex;
-    gap: 2rem;
-    max-width: 1600px;
-    margin: 0 auto;
-    padding: 0 1rem;
+    grid-template-columns: 240px 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem 1rem;
   }
-  
-  /* Left sidebar – fixed width, sticky */
+  .productGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .mainContainer {
+    grid-template-columns: 1fr;
+  }
   .sidebar {
-    width: 280px;
-    flex-shrink: 0;
+    display: none; /* Can use a collapsible mobile filter later */
   }
-  .sidebarInner {
-    position: sticky;
-    top: 100px; /* adjust based on your navbar height */
-  }
-  
-  /* Product area – fills remaining space */
-  .productArea {
-    flex: 1;
-    min-width: 0; /* prevents overflow */
-  }
-  
-  /* Dynamic product grid – 5 columns by default */
   .productGrid {
-    display: grid;
-    gap: 1.5rem;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
-  
-  .productGrid {
-    display: grid;
-    gap: 1.5rem;
-    grid-template-columns: repeat(5, 1fr);
-  }
-  
-  /* Each card fills the grid cell vertically */
-  .productGrid > * {
-    height: 100%;
-  }
-
-  /* Category icon row */
-.categoryRow {
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  gap: 1rem;
-  padding-bottom: 0.5rem;
-}
-.categoryItem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 80px;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-.categoryItem:hover {
-  color: #2563eb;
-}
-.categoryIcon {
-  font-size: 1.8rem;
-}
-.categoryName {
-  font-size: 0.75rem;
-  font-weight: 500;
-  margin-top: 0.25rem;
 }
 
-  /* Ultra‑wide screens (≥ 1600px) → 7 columns */
-  @media (min-width: 1600px) {
-    .productGrid {
-      grid-template-columns: repeat(7, 1fr);
-    }
-    .sidebar {
-      width: 320px;
-    }
+@media (max-width: 480px) {
+  .productGrid {
+    grid-template-columns: 1fr;
   }
-  
-  /* Large screens (≥ 1400px and < 1600px) → 6 columns */
-  @media (min-width: 1400px) and (max-width: 1599px) {
-    .productGrid {
-      grid-template-columns: repeat(6, 1fr);
-    }
-  }
-  
-  /* Tablet (≥ 768px and < 1024px) → 3 columns */
-  @media (min-width: 768px) and (max-width: 1023px) {
-    .productGrid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-    .sidebar {
-      width: 240px;
-    }
-  }
-  
-  /* Mobile (≥ 640px and < 768px) → 2 columns */
-  @media (min-width: 640px) and (max-width: 767px) {
-    .productGrid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-    .sidebar {
-      display: none; /* hide sidebar on small mobile, use mobile filter button */
-    }
-  }
-  
-  /* Small mobile (< 640px) → 1 column */
-  @media (max-width: 639px) {
-    .productGrid {
-      grid-template-columns: 1fr;
-    }
-    .sidebar {
-      display: none;
-    }
-  }
-  
-  /* Mobile filter button (already in JSX, no extra CSS needed) */
+}
